@@ -46,31 +46,29 @@ client.on("ready", () => {
 });
 
 client.on("message", (message) => {
-  if (message.body === "!db") {
-    message.getChat().then(function (chat) {
-      if (!chat.isGroup) {
-        checkDBTimestamp(message, function (results) {
-          if (results && results.length > 0) {
-            if (results[0].timestamp + replyInterval < unixTimestamp()) {
-              message.reply(randomMessage());
-              updatekDBTimestamp(message, function (results) {});
-            } else {
-              //Nao manda nada
-            }
+  message.getChat().then(function (chat) {
+    if (!chat.isGroup) {
+      checkDBTimestamp(message, function (results) {
+        if (results && results.length > 0) {
+          if (results[0].timestamp + replyInterval < unixTimestamp()) {
+            message.reply(randomMessage());
+            updatekDBTimestamp(message, function (results) {});
           } else {
-            insertDBTimestamp(message, function (results) {
-              message.reply(randomMessage());
-              addToBitrix(
-                message._data.notifyName,
-                message.from.replace("@c.us", ""),
-                ""
-              );
-            });
+            //Nao manda nada
           }
-        });
-      }
-    });
-  }
+        } else {
+          insertDBTimestamp(message, function (results) {
+            message.reply(randomMessage());
+            addToBitrix(
+              message._data.notifyName,
+              message.from.replace("@c.us", ""),
+              ""
+            );
+          });
+        }
+      });
+    }
+  });
 });
 
 client.initialize();
