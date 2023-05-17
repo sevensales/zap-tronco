@@ -3,6 +3,10 @@ const mysql = require("mysql");
 require("dotenv").config();
 const fs = require("fs");
 const https = require("https");
+const express = require("express");
+const multer = require("multer");
+const path = require("path");
+const basicAuth = require("express-basic-auth");
 
 const filePath = "messages.txt";
 
@@ -28,7 +32,7 @@ const replyInterval = parseInt(process.env.REPLY_INTERVAL);
 const bitrixUrl = process.env.BITRIX_URL;
 const bitrixSourceId = process.env.BITRIX_SOURCE_ID;
 
-const { Client, LocalAuth } = require("whatsapp-web.js");
+const { Client, LocalAuth, MessageMedia } = require("whatsapp-web.js");
 const client = new Client({
   authStrategy: new LocalAuth(),
 });
@@ -42,10 +46,6 @@ client.on("ready", () => {
 });
 
 client.on("message", (message) => {
-  if (message.body === "!bug") {
-    console.error("BUG ETC");
-    return;
-  }
   if (message.body === "!db") {
     message.getChat().then(function (chat) {
       if (!chat.isGroup) {
@@ -60,13 +60,77 @@ client.on("message", (message) => {
           } else {
             insertDBTimestamp(message, function (results) {
               message.reply(randomMessage());
-              //TODO: callar bitrix
+              addToBitrix(
+                message._data.notifyName,
+                message.from.replace("@c.us", ""),
+                ""
+              );
             });
           }
         });
       }
     });
   }
+});
+
+client.initialize();
+
+const app = express();
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
+
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
+});
+const upload = multer({ storage: storage });
+
+// Middleware for authentication
+app.use(
+  basicAuth({
+    users: { [process.env.API_USERNAME]: process.env.API_PASSWORD },
+    challenge: true,
+    unauthorizedResponse: "Authentication failed.",
+  })
+);
+
+// Endpoint for file upload
+app.post("/message", upload.single("file"), (req, res) => {
+  const number = req.body.number;
+  const message = req.body.message;
+  const file = req.file;
+
+  if (number && (file || message)) {
+    const numberWithSuffix = number.includes("@c.us")
+      ? number
+      : `${number}@c.us`;
+
+    if (file) {
+      const media = MessageMedia.fromFilePath(file.path);
+      client.sendMessage(numberWithSuffix, media);
+    }
+
+    if (message) {
+      client.sendMessage(numberWithSuffix, message);
+    }
+  }
+
+  res.send("Received POST message with file");
+});
+
+// Endpoint for fetching chats
+app.get("/chats", (req, res) => {
+  client.getChats().then((chats) => {
+    res.json(chats);
+  });
+});
+
+// Start the server
+const port = 3000;
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
 
 function checkDBTimestamp(message, callback) {
@@ -167,7 +231,6 @@ function insertDBTimestamp(message, callback) {
       }
     );
   });
-  addToBitrix(message._data.notifyName, message.from.replace("@c.us", ""), "");
 }
 function addToBitrix(name, phone, email) {
   const bitrixCall =
@@ -202,5 +265,3 @@ function addToBitrix(name, phone, email) {
 function unixTimestamp() {
   return Math.floor(Date.now() / 1000);
 }
-
-client.initialize();
