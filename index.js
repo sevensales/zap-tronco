@@ -17,11 +17,11 @@ fs.readFile(filePath, "utf8", (err, data) => {
     console.error("Error reading the file:", err);
     return;
   }
-  messages = data.split("\n");
+  messages = data.split("---");
 });
 
 function randomMessage() {
-  return messages[Math.floor(Math.random() * messages.length)];
+  return messages[Math.floor(Math.random() * messages.length)].trim();
 }
 
 const dbHost = process.env.DB_HOST;
