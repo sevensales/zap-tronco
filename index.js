@@ -126,7 +126,7 @@ app.get("/chats", (req, res) => {
 });
 
 // Start the server
-const port = 3000;
+const port = process.env.API_PORT;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
