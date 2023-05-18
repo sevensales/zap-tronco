@@ -55,8 +55,14 @@ client.on("message", (message) => {
       checkDBTimestamp(message, function (results) {
         if (results && results.length > 0) {
           if (results[0].timestamp + replyInterval < unixTimestamp()) {
-            message.reply(randomMessage());
-            updatekDBTimestamp(message, function (results) {});
+            updatekDBTimestamp(message, function (results) {
+              message.reply(randomMessage());
+              addToBitrix(
+                message._data.notifyName,
+                message.from.replace("@c.us", ""),
+                ""
+              );
+            });
           } else {
             //Nao manda nada
           }
