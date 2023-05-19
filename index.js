@@ -27,6 +27,8 @@ function randomMessage() {
 const appAutoReply = JSON.parse(process.env.APP_AUTO_REPLY.toLowerCase());
 const appAPIChats = JSON.parse(process.env.APP_API_CHATS.toLowerCase());
 const appAPIMessage = JSON.parse(process.env.APP_API_MESSAGE.toLowerCase());
+const appAPIport = process.env.API_PORT;
+const messageDelay = parseInt(process.env.MESSAGE_DELAY);
 const dbHost = process.env.DB_HOST;
 const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASSWORD;
@@ -60,7 +62,9 @@ if (appAutoReply) {
           if (results && results.length > 0) {
             if (results[0].timestamp + replyInterval < unixTimestamp()) {
               updatekDBTimestamp(message, function (results) {
-                message.reply(randomMessage());
+                setTimeout(() => {
+                  message.reply(randomMessage());
+                }, messageDelay);
                 addToBitrix(
                   message._data.notifyName,
                   message.from.replace("@c.us", ""),
@@ -72,7 +76,9 @@ if (appAutoReply) {
             }
           } else {
             insertDBTimestamp(message, function (results) {
-              message.reply(randomMessage());
+              setTimeout(() => {
+                message.reply(randomMessage());
+              }, messageDelay);
               addToBitrix(
                 message._data.notifyName,
                 message.from.replace("@c.us", ""),
@@ -112,7 +118,7 @@ app.use(
   })
 );
 
-if (appAPIChats) {
+if (appAPIMessage) {
   // Endpoint for message/file upload
   app.post("/message", upload.single("file"), (req, res) => {
     const number = req.body.number;
@@ -137,7 +143,7 @@ if (appAPIChats) {
     res.send("Message received.");
   });
   console.log("API: POST /message endpoint is ON");
-}else {
+} else {
   console.log("API: POST /message endpoint is OFF");
 }
 
@@ -154,9 +160,9 @@ if (appAPIChats) {
 }
 
 // Start the server
-const port = process.env.API_PORT;
-app.listen(port, () => {
-  console.log(`API is running on port ${port}`);
+
+app.listen(appAPIport, () => {
+  console.log(`API is running on port ${appAPIport}`);
 });
 
 function checkDBTimestamp(message, callback) {
