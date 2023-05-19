@@ -62,9 +62,7 @@ if (appAutoReply) {
           if (results && results.length > 0) {
             if (results[0].timestamp + replyInterval < unixTimestamp()) {
               updatekDBTimestamp(message, function (results) {
-                setTimeout(() => {
-                  message.reply(randomMessage());
-                }, messageDelay);
+                message.reply(randomMessage());
                 addToBitrix(
                   message._data.notifyName,
                   message.from.replace("@c.us", ""),
@@ -76,9 +74,7 @@ if (appAutoReply) {
             }
           } else {
             insertDBTimestamp(message, function (results) {
-              setTimeout(() => {
-                message.reply(randomMessage());
-              }, messageDelay);
+              message.reply(randomMessage());
               addToBitrix(
                 message._data.notifyName,
                 message.from.replace("@c.us", ""),
