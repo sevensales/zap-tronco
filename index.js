@@ -24,6 +24,9 @@ function randomMessage() {
   return messages[Math.floor(Math.random() * messages.length)].trim();
 }
 
+const appAutoReply = JSON.parse(process.env.APP_AUTO_REPLY.toLowerCase());
+const appAPIChats = JSON.parse(process.env.APP_API_CHATS.toLowerCase());
+const appAPIMessage = JSON.parse(process.env.APP_API_MESSAGE.toLowerCase());
 const dbHost = process.env.DB_HOST;
 const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASSWORD;
@@ -46,16 +49,29 @@ client.on("qr", (qr) => {
 });
 
 client.on("ready", () => {
-  console.log("Client is ready!");
+  console.log("web-whatsapp is ready.");
 });
 
-client.on("message", (message) => {
-  message.getChat().then(function (chat) {
-    if (!chat.isGroup) {
-      checkDBTimestamp(message, function (results) {
-        if (results && results.length > 0) {
-          if (results[0].timestamp + replyInterval < unixTimestamp()) {
-            updatekDBTimestamp(message, function (results) {
+if (appAutoReply) {
+  client.on("message", (message) => {
+    message.getChat().then(function (chat) {
+      if (!chat.isGroup) {
+        checkDBTimestamp(message, function (results) {
+          if (results && results.length > 0) {
+            if (results[0].timestamp + replyInterval < unixTimestamp()) {
+              updatekDBTimestamp(message, function (results) {
+                message.reply(randomMessage());
+                addToBitrix(
+                  message._data.notifyName,
+                  message.from.replace("@c.us", ""),
+                  ""
+                );
+              });
+            } else {
+              //Nao manda nada
+            }
+          } else {
+            insertDBTimestamp(message, function (results) {
               message.reply(randomMessage());
               addToBitrix(
                 message._data.notifyName,
@@ -63,23 +79,15 @@ client.on("message", (message) => {
                 ""
               );
             });
-          } else {
-            //Nao manda nada
           }
-        } else {
-          insertDBTimestamp(message, function (results) {
-            message.reply(randomMessage());
-            addToBitrix(
-              message._data.notifyName,
-              message.from.replace("@c.us", ""),
-              ""
-            );
-          });
-        }
-      });
-    }
+        });
+      }
+    });
   });
-});
+  console.log("ZAP: Auto reply is ON");
+} else {
+  console.log("ZAP: Auto reply is OFF");
+}
 
 client.initialize();
 
@@ -104,41 +112,51 @@ app.use(
   })
 );
 
-// Endpoint for file upload
-app.post("/message", upload.single("file"), (req, res) => {
-  const number = req.body.number;
-  const message = req.body.message;
-  const file = req.file;
+if (appAPIChats) {
+  // Endpoint for message/file upload
+  app.post("/message", upload.single("file"), (req, res) => {
+    const number = req.body.number;
+    const message = req.body.message;
+    const file = req.file;
 
-  if (number && (file || message)) {
-    const numberWithSuffix = number.includes("@c.us")
-      ? number
-      : `${number}@c.us`;
+    if (number && (file || message)) {
+      const numberWithSuffix = number.includes("@c.us")
+        ? number
+        : `${number}@c.us`;
 
-    if (file) {
-      const media = MessageMedia.fromFilePath(file.path);
-      client.sendMessage(numberWithSuffix, media);
+      if (file) {
+        const media = MessageMedia.fromFilePath(file.path);
+        client.sendMessage(numberWithSuffix, media);
+      }
+
+      if (message) {
+        client.sendMessage(numberWithSuffix, message);
+      }
     }
 
-    if (message) {
-      client.sendMessage(numberWithSuffix, message);
-    }
-  }
-
-  res.send("Received POST message with file");
-});
-
-// Endpoint for fetching chats
-app.get("/chats", (req, res) => {
-  client.getChats().then((chats) => {
-    res.json(chats);
+    res.send("Message received.");
   });
-});
+  console.log("API: POST /message endpoint is ON");
+}else {
+  console.log("API: POST /message endpoint is OFF");
+}
+
+if (appAPIChats) {
+  // Endpoint for fetching chats
+  app.get("/chats", (req, res) => {
+    client.getChats().then((chats) => {
+      res.json(chats);
+    });
+  });
+  console.log("API: GET /chats endpoint is ON");
+} else {
+  console.log("API: GET /chats endpoint is OFF");
+}
 
 // Start the server
 const port = process.env.API_PORT;
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`API is running on port ${port}`);
 });
 
 function checkDBTimestamp(message, callback) {
