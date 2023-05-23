@@ -66,7 +66,9 @@ if (appAutoReply) {
               updatekDBTimestamp(message, function (results) {
                 message.reply(randomMessage());
                 addToBitrix(
-                  message._data.notifyName,
+                  message._data.notifyName === undefined
+                    ? message.from.replace("@c.us", "")
+                    : message._data.notifyName,
                   message.from.replace("@c.us", ""),
                   ""
                 );
@@ -78,7 +80,9 @@ if (appAutoReply) {
             insertDBTimestamp(message, function (results) {
               message.reply(randomMessage());
               addToBitrix(
-                message._data.notifyName,
+                message._data.notifyName === undefined
+                  ? message.from.replace("@c.us", "")
+                  : message._data.notifyName,
                 message.from.replace("@c.us", ""),
                 ""
               );
@@ -213,7 +217,7 @@ function updatekDBTimestamp(message, callback) {
       user: message.from,
       name:
         message._data.notifyName === undefined
-          ? message.from
+          ? message.from.replace("@c.us", "")
           : message._data.notifyName,
       timestamp: message.timestamp,
     };
@@ -252,7 +256,7 @@ function insertDBTimestamp(message, callback) {
       user: message.from,
       name:
         message._data.notifyName === undefined
-          ? message.from
+          ? message.from.replace("@c.us", "")
           : message._data.notifyName,
       timestamp: message.timestamp,
     };
