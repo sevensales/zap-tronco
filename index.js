@@ -38,6 +38,7 @@ const bitrixUrl = process.env.BITRIX_URL;
 const bitrixSourceId = process.env.BITRIX_SOURCE_ID;
 
 const { Client, LocalAuth, MessageMedia } = require("whatsapp-web.js");
+var zapReady = false;
 const client = new Client({
   authStrategy: new LocalAuth(),
   puppeteer: {
@@ -51,6 +52,7 @@ client.on("qr", (qr) => {
 });
 
 client.on("ready", () => {
+  zapReady = true;
   console.log("web-whatsapp is ready.");
 });
 
@@ -146,9 +148,13 @@ if (appAPIMessage) {
 if (appAPIChats) {
   // Endpoint for fetching chats
   app.get("/chats", (req, res) => {
-    client.getChats().then((chats) => {
-      res.json(chats);
-    });
+    if (zapReady) {
+      client.getChats().then((chats) => {
+        res.json(chats);
+      });
+    } else {
+      res.send("Web Whatsapp not ready, wait until it's fully loaded.");
+    }
   });
   console.log("API: GET /chats endpoint is ON");
 } else {
