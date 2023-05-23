@@ -250,7 +250,10 @@ function insertDBTimestamp(message, callback) {
 
     let newRecord = {
       user: message.from,
-      name: message._data.notifyName,
+      name:
+        message._data.notifyName === undefined
+          ? message.from
+          : message._data.notifyName,
       timestamp: message.timestamp,
     };
 
