@@ -38,6 +38,7 @@ const bitrixUrl = process.env.BITRIX_URL;
 const bitrixSourceId = process.env.BITRIX_SOURCE_ID;
 
 const { Client, LocalAuth, MessageMedia } = require("whatsapp-web.js");
+const processedMessages = {};
 var zapReady = false;
 const client = new Client({
   authStrategy: new LocalAuth(),
@@ -58,12 +59,27 @@ client.on("ready", () => {
 
 if (appAutoReply) {
   client.on("message", (message) => {
+    const messageId = message.from;
+
+    // Check if the message ID has already been processed
+    if (processedMessages.hasOwnProperty(messageId)) {
+      const storedTimestamp = processedMessages[messageId].timestamp;
+      const currentTimestamp = unixTimestamp();
+      const timeDifference = currentTimestamp - storedTimestamp;
+
+      // Check if the reply interval has passed since the last processed message
+      if (timeDifference < replyInterval) {
+        // Don't process the message yet
+        return;
+      }
+    }
+
     message.getChat().then(function (chat) {
       if (!chat.isGroup) {
         checkDBTimestamp(message, function (results) {
           if (results && results.length > 0) {
             if (results[0].timestamp + replyInterval < unixTimestamp()) {
-              updatekDBTimestamp(message, function (results) {
+              updateDBTimestamp(message, function (results) {
                 message.reply(randomMessage());
                 addToBitrix(
                   message._data.notifyName === undefined
@@ -74,7 +90,7 @@ if (appAutoReply) {
                 );
               });
             } else {
-              //Nao manda nada
+              // Don't send any response
             }
           } else {
             insertDBTimestamp(message, function (results) {
@@ -88,6 +104,11 @@ if (appAutoReply) {
               );
             });
           }
+
+          // Store the message ID and timestamp in processedMessages object
+          processedMessages[messageId] = {
+            timestamp: message.timestamp,
+          };
         });
       }
     });
@@ -135,6 +156,34 @@ if (appAPIMessage) {
       if (file) {
         const media = MessageMedia.fromFilePath(file.path);
         client.sendMessage(numberWithSuffix, media);
+      }
+
+      if (message) {
+        client.sendMessage(numberWithSuffix, message);
+      }
+    }
+
+    res.send("Message received.");
+  });
+
+  app.get("/message", (req, res) => {
+    const number = req.query.number;
+    const message = req.query.message;
+    const fileUrl = req.query.fileUrl;
+
+    if (number && (fileUrl || message)) {
+      const numberWithSuffix = number.includes("@c.us")
+        ? number
+        : `${number}@c.us`;
+
+      if (fileUrl) {
+        MessageMedia.fromUrl(fileUrl)
+          .then((media) => {
+            client.sendMessage(numberWithSuffix, media);
+          })
+          .catch((error) => {
+            console.error("Error retrieving file from URL:", error);
+          });
       }
 
       if (message) {
@@ -199,7 +248,7 @@ function checkDBTimestamp(message, callback) {
   });
 }
 
-function updatekDBTimestamp(message, callback) {
+function updateDBTimestamp(message, callback) {
   const connection = mysql.createConnection({
     host: dbHost,
     user: dbUser,
