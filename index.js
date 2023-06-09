@@ -144,6 +144,7 @@ app.use(
 if (appAPIMessage) {
   // Endpoint for message/file upload
   app.post("/message", upload.single("file"), (req, res) => {
+    console.log(req);
     const number = req.body.number;
     const message = req.body.message;
     const file = req.file;
