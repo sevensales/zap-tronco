@@ -167,6 +167,7 @@ if (appAPIMessage) {
   });
 
   app.get("/message", (req, res) => {
+    console.log(req);
     const number = req.query.number;
     const message = req.query.message;
     const fileUrl = req.query.fileUrl;
