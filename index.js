@@ -144,19 +144,23 @@ app.use(
 if (appAPIMessage) {
   // Endpoint for message/file upload
   app.post("/message", upload.single("file"), (req, res) => {
-    console.log(req);
-    const number = req.body.number;
-    const message = req.body.message;
-    const file = req.file;
+    const number = req.query.number;
+    const message = req.query.message;
+    const fileUrl = req.query.fileUrl;
 
-    if (number && (file || message)) {
+    if (number && (fileUrl || message)) {
       const numberWithSuffix = number.includes("@c.us")
         ? number
         : `${number}@c.us`;
 
-      if (file) {
-        const media = MessageMedia.fromFilePath(file.path);
-        client.sendMessage(numberWithSuffix, media);
+      if (fileUrl) {
+        MessageMedia.fromUrl(fileUrl)
+          .then((media) => {
+            client.sendMessage(numberWithSuffix, media);
+          })
+          .catch((error) => {
+            console.error("Error retrieving file from URL:", error);
+          });
       }
 
       if (message) {
@@ -168,7 +172,6 @@ if (appAPIMessage) {
   });
 
   app.get("/message", (req, res) => {
-    console.log(req);
     const number = req.query.number;
     const message = req.query.message;
     const fileUrl = req.query.fileUrl;
