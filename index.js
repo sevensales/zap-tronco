@@ -149,7 +149,7 @@ if (appAPIMessage) {
     const fileUrl = req.query.fileUrl;
 
     if (number && (fileUrl || message)) {
-      const numberWithSuffix = number.includes("@c.us")
+      const numberWithSuffix = number.includes("@c.us") || number.includes("@g.us")
         ? number
         : `${number}@c.us`;
 
@@ -177,7 +177,7 @@ if (appAPIMessage) {
     const fileUrl = req.query.fileUrl;
 
     if (number && (fileUrl || message)) {
-      const numberWithSuffix = number.includes("@c.us")
+      const numberWithSuffix = number.includes("@c.us") || number.includes("@g.us")
         ? number
         : `${number}@c.us`;
 
