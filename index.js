@@ -145,7 +145,7 @@ if (appAPIMessage) {
   // Endpoint for message/file upload
   app.post("/message", upload.single("file"), (req, res) => {
     const number = req.query.number;
-    const message = req.query.message;
+    const message = req.query.message.split("\\n").join("\n");
     const fileUrl = req.query.fileUrl;
 
     if (number && (fileUrl || message)) {
