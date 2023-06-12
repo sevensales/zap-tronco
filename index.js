@@ -149,9 +149,10 @@ if (appAPIMessage) {
     const fileUrl = req.query.fileUrl;
 
     if (number && (fileUrl || message)) {
-      const numberWithSuffix = number.includes("@c.us") || number.includes("@g.us")
-        ? number
-        : `${number}@c.us`;
+      const numberWithSuffix =
+        number.includes("@c.us") || number.includes("@g.us")
+          ? number
+          : `${number}@c.us`;
 
       if (fileUrl) {
         MessageMedia.fromUrl(fileUrl)
@@ -173,13 +174,14 @@ if (appAPIMessage) {
 
   app.get("/message", (req, res) => {
     const number = req.query.number;
-    const message = req.query.message;
+    const message = req.query.message.split("\\n").join("\n");
     const fileUrl = req.query.fileUrl;
 
     if (number && (fileUrl || message)) {
-      const numberWithSuffix = number.includes("@c.us") || number.includes("@g.us")
-        ? number
-        : `${number}@c.us`;
+      const numberWithSuffix =
+        number.includes("@c.us") || number.includes("@g.us")
+          ? number
+          : `${number}@c.us`;
 
       if (fileUrl) {
         MessageMedia.fromUrl(fileUrl)
