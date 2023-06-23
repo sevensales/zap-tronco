@@ -1,15 +1,15 @@
 Olá, fiquei extremamente satisfeito em saber que despertamos o seu interesse em relação às nossas Máquinas de salgados e doces!
 A partir deste momento, o seu contato será prontamente encaminhado a um dos nossos consultores, que entrará em contato nas próximas horas para fornecer todas as informações necessárias.
-A Predileta agradece imensamente o seu contato.
+A <COMPANY_NAME> agradece imensamente o seu contato.
 ---
 Olá, fiquei extremamente satisfeito em saber que despertamos o seu interesse em relação às nossas Máquinas de salgados e doces!
 A partir deste momento, o seu contato será prontamente encaminhado a um dos nossos consultores, que entrará em contato nas próximas horas para fornecer todas as informações necessárias.
-A Predileta agradece imensamente o seu contato.
+A <COMPANY_NAME> agradece imensamente o seu contato.
 ---
 Olá, estou muito contente em saber que você se interessou pelas nossas Máquinas de salgados e doces!
 A partir de agora, o seu contato será imediatamente direcionado a um dos nossos consultores, que entrará em contato nas próximas horas para compartilhar todas as informações que você precisa.
-A Predileta agradece pelo seu contato.
+A <COMPANY_NAME> agradece pelo seu contato.
 ---
 Olá, fiquei bastante feliz em saber do seu interesse em relação às nossas Máquinas de salgados e doces!
 A partir deste momento, o seu contato será prontamente encaminhado para um dos nossos consultores, que entrará em contato nas próximas horas para fornecer todas as informações necessárias.
-A Predileta agradece sinceramente pelo seu contato.
+A <COMPANY_NAME> agradece sinceramente pelo seu contato.

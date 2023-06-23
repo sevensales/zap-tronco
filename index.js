@@ -12,18 +12,6 @@ const filePath = "messages.txt";
 
 var messages = "";
 
-fs.readFile(filePath, "utf8", (err, data) => {
-  if (err) {
-    console.error("Error reading the file:", err);
-    return;
-  }
-  messages = data.split("---");
-});
-
-function randomMessage() {
-  return messages[Math.floor(Math.random() * messages.length)].trim();
-}
-
 const appAutoReply = JSON.parse(process.env.APP_AUTO_REPLY.toLowerCase());
 const appAPIChats = JSON.parse(process.env.APP_API_CHATS.toLowerCase());
 const appAPIMessage = JSON.parse(process.env.APP_API_MESSAGE.toLowerCase());
@@ -36,7 +24,21 @@ const dbDatabase = process.env.DB_DATABASE;
 const replyInterval = parseInt(process.env.REPLY_INTERVAL);
 const bitrixUrl = process.env.BITRIX_URL;
 const bitrixSourceId = process.env.BITRIX_SOURCE_ID;
+const companyName = process.env.COMPANY_NAME;
 
+fs.readFile(filePath, "utf8", (err, data) => {
+  if (err) {
+    console.error("Error reading the file:", err);
+    return;
+  }
+  messages = data.split("---");
+});
+
+function randomMessage() {
+  return messages[Math.floor(Math.random() * messages.length)]
+    .trim()
+    .replace("<COMPANY_NAME>", companyName);
+}
 const { Client, LocalAuth, MessageMedia } = require("whatsapp-web.js");
 const processedMessages = {};
 var zapReady = false;
