@@ -335,6 +335,10 @@ function insertDBTimestamp(message, callback) {
   });
 }
 function addToBitrix(name, phone, email) {
+  let ddd = "";
+  if (phone.substring(0, 2) === "55") {
+    ddd = phone.substring(2, 4);
+  }
   const bitrixCall =
     bitrixUrl +
     "/crm.lead.add.json?FIELDS[TITLE]=" +
@@ -346,7 +350,9 @@ function addToBitrix(name, phone, email) {
     "&FIELDS[PHONE][0][VALUE]=" +
     phone +
     "&FIELDS[SOURCE_ID]=" +
-    bitrixSourceId;
+    bitrixSourceId +
+    "&FIELDS[UF_CRM_1687526938]=" +
+    ddd;
   https
     .get(bitrixCall, (response) => {
       let data = "";
