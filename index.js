@@ -166,12 +166,14 @@ if (appAPIMessage) {
       }
 
       if (message) {
-        try {
-          client.sendMessage(numberWithSuffix, message);
-        } catch (error) {
-          res.json({ error: error });
-        }
-        res.json({ success: true });
+        client
+          .sendMessage(numberWithSuffix, message)
+          .then((msg) => {
+            res.json({ success: true });
+          })
+          .catch((error) => {
+            res.json({ error: error });
+          });
       }
     } else {
       res.json({ error: "Missing arguments." });
@@ -200,12 +202,15 @@ if (appAPIMessage) {
       }
 
       if (message) {
-        try {
-          client.sendMessage(numberWithSuffix, message);
-        } catch (error) {
-          res.json({ error: error });
-        }
-        res.json({ success: true });
+        console.log(numberWithSuffix);
+        client
+          .sendMessage(numberWithSuffix, message)
+          .then((msg) => {
+            res.json({ success: true });
+          })
+          .catch((error) => {
+            res.json({ error: error });
+          });
       }
     } else {
       res.json({ error: "Missing arguments." });
