@@ -211,9 +211,11 @@ if (appAPIMessage) {
         client
           .sendMessage(numberWithSuffix, message)
           .then((msg) => {
+            console.log(msg);
             res.json({ success: true });
           })
           .catch((error) => {
+            console.log(error);
             res.json({ error: true });
           });
       }
