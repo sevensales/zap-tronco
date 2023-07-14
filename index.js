@@ -62,7 +62,6 @@ client.on("ready", () => {
 if (appAutoReply) {
   client.on("message", (message) => {
     const messageId = message.from;
-
     // Check if the message ID has already been processed
     if (processedMessages.hasOwnProperty(messageId)) {
       const storedTimestamp = processedMessages[messageId].timestamp;
@@ -167,11 +166,16 @@ if (appAPIMessage) {
       }
 
       if (message) {
-        client.sendMessage(numberWithSuffix, message);
+        try {
+          client.sendMessage(numberWithSuffix, message);
+          res.json({ success: true });
+        } catch (error) {
+          res.json({ error: error });
+        }
       }
+    } else {
+      res.json({ error: "Missing arguments." });
     }
-
-    res.send("Message received.");
   });
 
   app.get("/message", (req, res) => {
