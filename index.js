@@ -200,11 +200,16 @@ if (appAPIMessage) {
       }
 
       if (message) {
-        client.sendMessage(numberWithSuffix, message);
+        try {
+          client.sendMessage(numberWithSuffix, message);
+          res.json({ success: true });
+        } catch (error) {
+          res.json({ error: error });
+        }
       }
+    } else {
+      res.json({ error: "Missing arguments." });
     }
-
-    res.send("Message received.");
   });
   console.log("API: POST /message endpoint is ON");
 } else {
