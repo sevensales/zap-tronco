@@ -172,7 +172,7 @@ if (appAPIMessage) {
             res.json({ success: true });
           })
           .catch((error) => {
-            res.json({ error: error });
+            res.json({ error: true });
           });
       }
     } else {
@@ -202,14 +202,13 @@ if (appAPIMessage) {
       }
 
       if (message) {
-        console.log(numberWithSuffix);
         client
           .sendMessage(numberWithSuffix, message)
           .then((msg) => {
             res.json({ success: true });
           })
           .catch((error) => {
-            res.json({ error: error });
+            res.json({ error: true });
           });
       }
     } else {
