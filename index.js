@@ -184,9 +184,12 @@ if (appAPIMessage) {
   });
 
   app.get("/message", (req, res) => {
-    const number = req.query.number;
-    const message = req.query.message.split("\\n").join("\n");
-    const fileUrl = req.query.fileUrl;
+    var number = req.query.number;
+    var message = req.query.message;
+    var fileUrl = req.query.fileUrl;
+    if (message) {
+      message = message.split("\\n").join("\n");
+    }
 
     if (number && (fileUrl || message)) {
       const numberWithSuffix =
