@@ -169,9 +169,15 @@ if (appAPIMessage) {
       }
 
       if (message) {
-        client.sendMessage(numberWithSuffix, message);
+        client
+          .sendMessage(numberWithSuffix, message)
+          .then((msg) => {
+            res.json({ success: true });
+          })
+          .catch((error) => {
+            res.json({ error: true });
+          });
       }
-      res.json({ success: true });
     } else {
       res.json({ error: "Missing arguments." });
     }
@@ -202,9 +208,17 @@ if (appAPIMessage) {
       }
 
       if (message) {
-        client.sendMessage(numberWithSuffix, message);
+        client
+          .sendMessage(numberWithSuffix, message)
+          .then((msg) => {
+            console.log(msg);
+            res.json({ success: true });
+          })
+          .catch((error) => {
+            console.log(error);
+            res.json({ error: true });
+          });
       }
-      res.json({ success: true });
     } else {
       res.json({ error: "Missing arguments." });
     }
