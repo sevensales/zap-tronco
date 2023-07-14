@@ -168,10 +168,10 @@ if (appAPIMessage) {
       if (message) {
         try {
           client.sendMessage(numberWithSuffix, message);
-          res.json({ success: true });
         } catch (error) {
           res.json({ error: error });
         }
+        res.json({ success: true });
       }
     } else {
       res.json({ error: "Missing arguments." });
@@ -202,10 +202,10 @@ if (appAPIMessage) {
       if (message) {
         try {
           client.sendMessage(numberWithSuffix, message);
-          res.json({ success: true });
         } catch (error) {
           res.json({ error: error });
         }
+        res.json({ success: true });
       }
     } else {
       res.json({ error: "Missing arguments." });
