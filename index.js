@@ -56,7 +56,19 @@ client.on("qr", (qr) => {
 
 client.on("ready", () => {
   zapReady = true;
-  console.log("web-whatsapp is ready.");
+  console.log("Whatsapp-Web is ready.");
+});
+
+client.on("auth_failure", (message) => {
+  console.log("Auth failure: " + message);
+});
+
+client.on("change_state", (state) => {
+  console.log("State change: " + state);
+});
+
+client.on("disconnected", (reason) => {
+  console.log("Disconnected: " + reason);
 });
 
 if (appAutoReply) {
