@@ -251,6 +251,27 @@ if (appAPIChats) {
       res.send("Web Whatsapp not ready, wait until it's fully loaded.");
     }
   });
+
+  app.get("/chat", (req, res) => {
+    var number = req.query.number;
+    const numberWithSuffix =
+      number.includes("@c.us") || number.includes("@g.us")
+        ? number
+        : `${number}@c.us`;
+    if (zapReady) {
+      if (number) {
+        client.getChatById(numberWithSuffix).then((chat) => {
+          chat.fetchMessages({ limit: 100 }).then((history) => {
+            res.json(history);
+          });
+        });
+      } else {
+        res.send("Chat number invalid");
+      }
+    } else {
+      res.send("Web Whatsapp not ready, wait until it's fully loaded.");
+    }
+  });
   console.log("API: GET /chats endpoint is ON");
 } else {
   console.log("API: GET /chats endpoint is OFF");
