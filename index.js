@@ -378,7 +378,7 @@ function insertDBTimestamp(message, callback) {
       newRecord,
       (err, results) => {
         if (err) {
-          console.error("Error inserting record: " + err.stack);
+          console.error("Error inserting record: " + err.message);
           connection.end(); // Close the connection in case of an error
           return;
         }
