@@ -74,6 +74,7 @@ client.on("disconnected", (reason) => {
 if (appAutoReply) {
   client.on("message", (message) => {
     const messageId = message.from;
+
     // Check if the message ID has already been processed
     if (processedMessages.hasOwnProperty(messageId)) {
       const storedTimestamp = processedMessages[messageId].timestamp;
@@ -93,6 +94,25 @@ if (appAutoReply) {
           if (results && results.length > 0) {
             if (results[0].timestamp + replyInterval < unixTimestamp()) {
               updateDBTimestamp(message, function (results) {
+                // Introduce a delay here (e.g., 2000 milliseconds)
+                setTimeout(() => {
+                  message.reply(randomMessage());
+                  addToBitrix(
+                    message._data.notifyName === undefined
+                      ? message.from.replace("@c.us", "")
+                      : message._data.notifyName,
+                    message.from.replace("@c.us", ""),
+                    ""
+                  );
+                }, 2000); // Adjust the delay time as needed
+              });
+            } else {
+              // Don't send any response
+            }
+          } else {
+            insertDBTimestamp(message, function (results) {
+              // Introduce a delay here (e.g., 2000 milliseconds)
+              setTimeout(() => {
                 message.reply(randomMessage());
                 addToBitrix(
                   message._data.notifyName === undefined
@@ -101,20 +121,7 @@ if (appAutoReply) {
                   message.from.replace("@c.us", ""),
                   ""
                 );
-              });
-            } else {
-              // Don't send any response
-            }
-          } else {
-            insertDBTimestamp(message, function (results) {
-              message.reply(randomMessage());
-              addToBitrix(
-                message._data.notifyName === undefined
-                  ? message.from.replace("@c.us", "")
-                  : message._data.notifyName,
-                message.from.replace("@c.us", ""),
-                ""
-              );
+              }, 2000); // Adjust the delay time as needed
             });
           }
 
