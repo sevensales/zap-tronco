@@ -96,6 +96,7 @@ if (appAutoReply) {
               updateDBTimestamp(message, function (results) {
                 // Introduce a delay here (e.g., 2000 milliseconds)
                 setTimeout(() => {
+                  console.log("[U] "+message.timestamp+": "+message.from);
                   message.reply(randomMessage());
                   addToBitrix(
                     message._data.notifyName === undefined
@@ -113,6 +114,7 @@ if (appAutoReply) {
             insertDBTimestamp(message, function (results) {
               // Introduce a delay here (e.g., 2000 milliseconds)
               setTimeout(() => {
+                console.log("[I] "+message.timestamp+": "+message.from);
                 message.reply(randomMessage());
                 addToBitrix(
                   message._data.notifyName === undefined
