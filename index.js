@@ -7,6 +7,10 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const basicAuth = require("express-basic-auth");
+const PromiseQueue = require("./PromiseQueue");
+
+// Create a promise queue to handle asynchronous operations
+const promiseQueue = new PromiseQueue();
 
 const filePath = "messages.txt";
 
@@ -94,36 +98,22 @@ if (appAutoReply) {
           if (results && results.length > 0) {
             if (results[0].timestamp + replyInterval < unixTimestamp()) {
               updateDBTimestamp(message, function (results) {
-                // Introduce a delay here (e.g., 2000 milliseconds)
-                setTimeout(() => {
-                  console.log("[U] "+message.timestamp+": "+message.from);
-                  message.reply(randomMessage());
-                  addToBitrix(
-                    message._data.notifyName === undefined
-                      ? message.from.replace("@c.us", "")
-                      : message._data.notifyName,
-                    message.from.replace("@c.us", ""),
-                    ""
-                  );
-                }, 2000); // Adjust the delay time as needed
+                // Use the promise queue to add the operations with a delay of 2000 milliseconds
+                promiseQueue.add(
+                  () => processMessage(message, randomMessage()),
+                  messageDelay
+                );
               });
             } else {
               // Don't send any response
             }
           } else {
             insertDBTimestamp(message, function (results) {
-              // Introduce a delay here (e.g., 2000 milliseconds)
-              setTimeout(() => {
-                console.log("[I] "+message.timestamp+": "+message.from);
-                message.reply(randomMessage());
-                addToBitrix(
-                  message._data.notifyName === undefined
-                    ? message.from.replace("@c.us", "")
-                    : message._data.notifyName,
-                  message.from.replace("@c.us", ""),
-                  ""
-                );
-              }, 2000); // Adjust the delay time as needed
+              // Use the promise queue to add the operations with a delay of 2000 milliseconds
+              promiseQueue.add(
+                () => processMessage(message, randomMessage()),
+                messageDelay
+              );
             });
           }
 
@@ -434,4 +424,29 @@ function addToBitrix(name, phone, email) {
 
 function unixTimestamp() {
   return Math.floor(Date.now() / 1000);
+}
+
+// Function to format timestamp
+function formatDate(timestamp) {
+  const date = new Date(timestamp * 1000); // Convert to milliseconds
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const seconds = date.getSeconds().toString().padStart(2, "0");
+
+  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+}
+
+function processMessage(message, replyMessage) {
+  console.log("[U] " + formatDate(message.timestamp) + ": " + message.from);
+  message.reply(replyMessage);
+  addToBitrix(
+    message._data.notifyName === undefined
+      ? message.from.replace("@c.us", "")
+      : message._data.notifyName,
+    message.from.replace("@c.us", ""),
+    ""
+  );
 }
