@@ -43,7 +43,7 @@ function randomMessage() {
     .trim()
     .replace("<COMPANY_NAME>", companyName);
 }
-const { Client, LocalAuth, MessageMedia } = require('./whatsapp-web.js/index');
+const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js/index');
 const processedMessages = {};
 var zapReady = false;
 const client = new Client({
