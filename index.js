@@ -52,6 +52,11 @@ const client = new Client({
     headless: true,
     args: ["--no-sandbox"],
   },
+  webVersionCache: 
+  {
+    remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.3000.1013280057-alpha.html',
+    type: 'remote' 
+  } 
 });
 
 client.on("qr", (qr) => {
