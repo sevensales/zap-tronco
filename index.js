@@ -46,7 +46,7 @@ function randomMessage() {
 const { Client, LocalAuth, MessageMedia } = require("whatsapp-web.js/index");
 const processedMessages = {};
 var zapReady = false;
-const wwebVersion = "2.2407.3";
+const wwebVersion = "2.3000.1014043554-alpha";
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
