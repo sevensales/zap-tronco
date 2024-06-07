@@ -55,14 +55,19 @@ const client = new Client({
         headless: true,
         args: ["--no-sandbox"],
     },
-    webVersionCache: {
+    /*webVersionCache: {
         remotePath: `https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/${wwebVersion}.html`,
         type: "remote",
-    },
+    },*/
 });
 
 client.on("qr", async (qr) => {
     qrcode.generate(qr, { small: true });
+    if (pairingCodeb) {
+        console.log(pairingPhone);
+        const pairingCode = await client.requestPairingCode(pairingPhone);
+        console.log(pairingCode);
+    }
 });
 
 client.on("ready", () => {
