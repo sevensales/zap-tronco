@@ -46,6 +46,7 @@ function randomMessage() {
 const { Client, LocalAuth, MessageMedia } = require("whatsapp-web.js/index");
 const processedMessages = {};
 var zapReady = false;
+const wwebVersion = "2.2407.3";
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
@@ -53,8 +54,7 @@ const client = new Client({
         args: ["--no-sandbox"],
     },
     webVersionCache: {
-        remotePath:
-            "https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.3000.1014043554-alpha.html",
+        remotePath: `https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/${wwebVersion}.html`,
         type: "remote",
     },
 });
