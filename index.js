@@ -29,6 +29,8 @@ const replyInterval = parseInt(process.env.REPLY_INTERVAL);
 const bitrixUrl = process.env.BITRIX_URL;
 const bitrixSourceId = process.env.BITRIX_SOURCE_ID;
 const companyName = process.env.COMPANY_NAME;
+const pairingCodeb = JSON.parse(process.env.PAIRING_CODE.toLowerCase());
+const pairingPhone = process.env.PAIRING_PHONE;
 
 fs.readFile(filePath, "utf8", (err, data) => {
     if (err) {
@@ -50,7 +52,7 @@ const wwebVersion = "2.3000.1014043554-alpha";
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
-        headless: true,
+        headless: false,
         args: ["--no-sandbox"],
     },
     webVersionCache: {
@@ -59,7 +61,7 @@ const client = new Client({
     },
 });
 
-client.on("qr", (qr) => {
+client.on("qr", async (qr) => {
     qrcode.generate(qr, { small: true });
 });
 
